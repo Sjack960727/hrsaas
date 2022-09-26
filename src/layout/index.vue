@@ -42,6 +42,10 @@ export default {
       }
     }
   },
+  created() {
+    // this.$store.dispatch('user/getUserInfo')
+    // console.log(res)
+  },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
