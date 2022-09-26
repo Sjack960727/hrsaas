@@ -12,6 +12,7 @@ request.interceptors.response.use(response => {
     return data
   } else {
     Message.error(message)
+    // 为什么不用throw error
     return Promise.reject(new Error(message))
   }
 }, error => {
