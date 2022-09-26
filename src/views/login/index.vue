@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginFormRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
         <h3 class="title">
@@ -8,43 +8,23 @@
 
         </h3>
       </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
+      <el-form-item prop="mobile">
+        <span
+          class="svg-container el-icon-user-solid"
         />
+        <el-input v-model="loginForm.mobile" placeholder="请输入手机号码" />
       </el-form-item>
-
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+        <el-input ref="pwd" v-model="loginForm.password" :type="passwordType" placeholder="请输入密码" />
+        <span class="svg-container" @click="showPwd">
+          <svg-icon :icon-class="passwordType==='password'? 'eye':'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button class="loginBtn" :loading="loading" @click="login">登录</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">账号: 13800000002</span>
@@ -56,73 +36,60 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
+import { validPhone } from '@/utils/validate'
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+    const validateMobile = (rule, value, callback) => {
+      if (!validPhone(value)) {
+        callback(new Error('手机号格式不正确'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        mobile: '13800000002',
+        password: '123456'
       },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
-      },
-      loading: false,
       passwordType: 'password',
-      redirect: undefined
+      loginFormRules: {
+        mobile: [
+          { required: true, message: '请填写手机号' },
+          // {
+          //   pattern: /^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/,
+          //   message: '手机号码格式不正确'
+          // }
+          // 用validator验证
+          { validator: validateMobile }
+        ],
+        password: [
+          { required: true, message: '请填写密码' },
+          {	min: 6, max: 16, message: '密码的长度在6-16位之间 ', trigger: 'blur' }
+        ]
+      },
+      loading: false
     }
   },
   watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
-      },
-      immediate: true
-    }
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
+      this.passwordType === 'password' ? this.passwordType = '' : this.passwordType = 'password'
       this.$nextTick(() => {
-        this.$refs.password.focus()
+        this.$refs.pwd.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+    async login() {
+      try {
+        await this.$refs.loginForm.validate()
+        this.loading = true
+        // login({ mobile: '13800000002',
+        //   password: '123456' })
+        await this.$store.dispatch('user/loginAction', this.loginForm)
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -184,6 +151,10 @@ $cursor: #fff;
   height: 64px;
   line-height: 32px;
   font-size: 24px;
+  width:100%;
+  margin-bottom:30px;
+  border:none;
+  color:#fff;
 }
 }
 </style>
