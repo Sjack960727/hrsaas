@@ -87,6 +87,7 @@ export default {
         // login({ mobile: '13800000002',
         //   password: '123456' })
         await this.$store.dispatch('user/loginAction', this.loginForm)
+        this.$router.push('/')
       } finally {
         this.loading = false
       }
