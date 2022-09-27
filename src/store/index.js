@@ -16,7 +16,7 @@ const store = new Vuex.Store({
   },
   getters,
   plugins: [ceratePersistedState({
-    paths: ['user.token']
+    paths: ['user.token', 'user.hrsaasTime']
     // reducer(state) {
     //   return {
     //     user: state.user.token
