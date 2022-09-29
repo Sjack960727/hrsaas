@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card><el-tabs v-model="activeName">
-      <el-tab-pane label="角色管理123555" name="first">
+      <el-tab-pane label="角色管理" name="first">
         <el-row :gutter="10" style="height:60px"><el-button
           type="primary"
           style="margin-left:10px;"
