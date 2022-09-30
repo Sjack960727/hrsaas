@@ -36,7 +36,7 @@ export default {
       const res1 = await getUserDetailById(res.userId)
       // console.log(res)
       const result = { ...res, ...res1 }
-      console.log(result)
+      // console.log(result)
       commit('SET_USER_INFO', result)
       return JSON.parse(JSON.stringify(result))
     },
