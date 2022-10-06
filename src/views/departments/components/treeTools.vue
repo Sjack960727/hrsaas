@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import { delDepartments } from '@/api/departments'
 export default {
   props: {
     treeNode: {
@@ -39,14 +40,26 @@ export default {
   },
   methods: {
     handleCommand(type) {
-      console.log(type)
+      // console.log(type)
       if (type === 'add') {
         // 新增
         this.$emit('addDepts', this.treeNode)
       } else if (type === 'edit') {
         // 编辑
+        this.$emit('editDept', this.treeNode)
       } else {
         // 删除
+        this.$confirm('您确定删除该部门的数据吗？', '删除提示', {
+          cancelButtonText: '取消',
+          confirmButtonText: '确定'
+        }).then(() => {
+          // 如果点击了确定就会进入then
+          return delDepartments(this.treeNode.id) // 返回promise对象
+        }).then(() => {
+          //  如果删除成功了  就会进入这里
+          this.$message.success('删除成功')
+          this.$emit('refreshList')
+        })
       }
     }
   }

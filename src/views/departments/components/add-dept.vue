@@ -1,6 +1,6 @@
 <template>
   <!-- 新增部门的弹层 -->
-  <el-dialog title="新增部门" :visible="showDialog" @close="handleClose">
+  <el-dialog :title="title" :visible="showDialog" @close="handleClose">
     <!-- 表单组件  el-form   label-width设置label的宽度   -->
     <!-- 匿名插槽 -->
     <el-form ref="addDeptForm" label-width="120px" :model="formData" :rules="rules">
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { getDepartments, addDepartments } from '@/api/departments'
+import { getDepartments, addDepartments, updateDepartments } from '@/api/departments'
 import { getEmployeeSimple } from '@/api/employees'
 export default {
   props: {
@@ -48,15 +48,30 @@ export default {
     const checkCodeRepeat = async(rule, value, callback) => {
       // 先要获取最新的组织架构数据
       const { depts } = await getDepartments()
-      const isRepeat = depts.some(item => item.code === value)
+      let isRepeat = true
+      if (this.formData.id) {
+        isRepeat = depts.some(item => item.id !== this.formData.id && item.code === value)
+      } else {
+        isRepeat = depts.some(item => item.code === value)
+      }
+
       isRepeat ? callback(new Error(`组织架构中已经有部门使用${value}编码`)) : callback()
     }
     const checkNameRepeat = async(rule, value, callback) => {
       // 先要获取最新的组织架构数据
       const { depts } = await getDepartments()
+      let isRepeat = true
       // depts是所有的部门数据
       // 如何去找技术部所有的子节点
-      const isRepeat = depts.filter(item => item.pid === this.treeNode.id).some(item => item.name === value)
+      if (this.formData.id) {
+        const deptstj1 = depts.filter(item => item.pid === this.treeNode.pid && item.id !== this.treeNode.id)
+        // console.log(deptstj1)
+        isRepeat = deptstj1.some(item => item.name === value)
+      } else {
+        const deptstj = depts.filter(item => item.pid === this.treeNode.pid)
+        isRepeat = deptstj.some(item => item.name === value)
+      }
+
       isRepeat ? callback(new Error(`同级部门下已经有${value}的部门了`)) : callback()
     }
     return {
@@ -89,6 +104,11 @@ export default {
       loading: false
     }
   },
+  computed: {
+    title() {
+      return this.formData.id ? '编辑部门' : '新增部门'
+    }
+  },
   methods: {
     handleClose() {
       this.$emit('update:showDialog', false)
@@ -107,8 +127,14 @@ export default {
       try {
         await this.$refs.addDeptForm.validate()
         this.loading = true
-        await addDepartments({ ...this.formData, pid: this.treeNode.id })
-        this.$message.success('添加成功')
+        if (this.formData.id) {
+          await updateDepartments({ ...this.formData })
+          this.$message.success('编辑成功')
+        } else {
+          console.log({ ...this.formData, pid: this.treeNode.id })
+          await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          this.$message.success('添加成功')
+        }
         this.loading = false
         this.$parent.getDepartments()
         this.handleClose()

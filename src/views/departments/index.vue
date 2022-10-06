@@ -1,11 +1,11 @@
 <template>
-  <div class="departments-container">
+  <div v-loading="loading" class="departments-container">
     <el-card>
       <tree-tools :tree-node="company" :is-root="false" @addDepts="addDepts" /></el-card>
     <el-tree :data="depts" :props="defaultProps" :default-expand-all="true" style="margin-top:30px">
-      <tree-tools slot-scope="{data}" :tree-node="data" @addDepts="addDepts" />
+      <tree-tools slot-scope="{data}" :tree-node="data" @addDepts="addDepts" @editDept="editDept" @refreshList="getDepartments" />
     </el-tree>
-    <add-dept :show-dialog.sync="showDialog" :tree-node="currentNode" />
+    <add-dept ref="addDept" :show-dialog.sync="showDialog" :tree-node="currentNode" />
   </div>
 </template>
 
@@ -20,6 +20,7 @@ export default {
 
   data() {
     return {
+      loading: false,
       showDialog: false,
       defaultProps: {
         label: 'name'
@@ -39,14 +40,23 @@ export default {
 
   methods: {
     async getDepartments() {
-      const { depts, companyManage, companyName } = await getDepartments()
-      this.depts = tranListToTreeData(depts, '')
-      // console.log(this.depts)
-      this.company = { name: companyName, manager: companyManage, id: '' }
+      try {
+        this.loading = true
+        const { depts, companyManage, companyName } = await getDepartments()
+        this.depts = tranListToTreeData(depts, '')
+        // console.log(this.depts)
+        this.company = { name: companyName, manager: companyManage, id: '' }
+      } finally { this.loading = false }
     },
     addDepts(node) {
       this.showDialog = true // 显示弹层
-      this.currentNode = node
+      this.currentNode = { ...node }
+    },
+    editDept(node) {
+      // console.log(node)
+      this.showDialog = true
+      this.currentNode = { ...node }
+      this.$refs.addDept.formData = { ...node }
     }
   }
 }
