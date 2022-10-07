@@ -15,10 +15,9 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
-import * as directives from '@/directives'
-Object.keys(directives).forEach(ele => {
-  Vue.directive(ele, directives[ele])
-})
+import components from '@/components'
+Vue.use(components)
+
 // import { imgerror } from '@/directives'
 // Vue.directive('imgerror', imgerror)
 /**

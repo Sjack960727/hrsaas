@@ -13,6 +13,8 @@
 import pathToRegexp from 'path-to-regexp'
 
 export default {
+  name: 'Breadcrumb',
+
   data() {
     return {
       levelList: null
