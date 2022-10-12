@@ -9,7 +9,7 @@
 
         <template slot="after">
           <el-button size="small" type="warning" @click="$router.push('/import')">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
+          <el-button size="small" type="danger" @click="exportExcle">导出</el-button>
           <el-button size="small" type="primary" @click="handleEmoly">新增员工</el-button>
         </template>
       </PageTools>
@@ -121,6 +121,44 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    async exportExcle() {
+      const exportExcelMapPath = {
+        '手机号': 'mobile',
+        '姓名': 'username',
+        '入职日期': 'timeOfEntry',
+        '聘用形式': 'formOfEmployment',
+        '转正日期': 'correctionTime',
+        '工号': 'workNumber',
+        '部门': 'departmentName'
+      }
+      // const header = ['手机号','姓名','入职日期','聘用形式','转正日期','工号','部门']
+      const header = Object.keys(exportExcelMapPath)
+
+      const { rows } = await getEmployeeList({
+        page: 1,
+        size: this.total
+      })
+      // console.log(rows)
+      const data = rows.map(item => {
+        return header.map(h => {
+          if (h === '聘用形式') {
+            const find = this.hireType.find(hire => {
+              return hire.id === item[exportExcelMapPath[h]]
+            })
+            return find ? find.value : '未知'
+          }
+          return item[exportExcelMapPath[h]]
+        })
+      })
+      const { export_json_to_excel } = await import('@/vendor/Export2Excel.js')
+      export_json_to_excel({
+        header,
+        data,
+        filename: '测试导出',
+        autoWidth: true,
+        bookType: 'xlsx'
+      })
     }
 
   }

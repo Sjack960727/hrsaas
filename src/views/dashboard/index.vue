@@ -1,10 +1,10 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}
-      <UploadExcel
+      <!-- <UploadExcel
         :before-upload="beforeUpload"
         :on-success="handleSuccess"
-      />
+      /> -->
     </div>
 
   </div>
