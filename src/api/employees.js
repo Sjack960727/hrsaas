@@ -35,3 +35,9 @@ export function importEmployee(data) {
     data
   })
 }
+
+export function getPersonalDetail(id) {
+  return request({
+    url: `/employees/${id}/personalInfo`
+  })
+}

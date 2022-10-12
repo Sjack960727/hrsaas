@@ -6,7 +6,6 @@
 
 <script>
 export default {
-  name: 'HrsaasIndex',
 
   data() {
     return {
