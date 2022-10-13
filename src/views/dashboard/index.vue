@@ -5,6 +5,7 @@
         :before-upload="beforeUpload"
         :on-success="handleSuccess"
       /> -->
+      <Upload-Img />
     </div>
 
   </div>
