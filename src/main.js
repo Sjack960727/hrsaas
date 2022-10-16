@@ -16,6 +16,9 @@ import '@/icons' // icon
 import '@/permission' // permission control
 
 import components from '@/components'
+import Print from 'vue-print-nb'
+import 'default-passive-events'
+Vue.use(Print)
 Vue.use(components)
 
 // import { imgerror } from '@/directives'

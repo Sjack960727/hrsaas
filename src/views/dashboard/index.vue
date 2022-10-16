@@ -5,7 +5,9 @@
         :before-upload="beforeUpload"
         :on-success="handleSuccess"
       /> -->
-      <Upload-Img />
+      <Upload-Img @onSuccess="onSuccess1" />
+      <Upload-Img @onSuccess="onSuccess2" />
+
     </div>
 
   </div>
@@ -22,16 +24,11 @@ export default {
     ])
   },
   methods: {
-    handleSuccess(data) {
-      console.log('data', data)
+    onSuccess1(val) {
+      console.log(val)
     },
-    beforeUpload(file) {
-      console.log(file)
-      if (file.size / 1024 > 1024) {
-        this.$message.error('文件大小不能超过1024kb')
-        return false
-      }
-      return true
+    onSuccess2(val) {
+      alert(222 + val)
     }
   }
 }
